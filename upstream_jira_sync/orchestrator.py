@@ -516,12 +516,14 @@ class SyncOrchestrator:
                 log.info("  Could not summarize discussion for issue #%d", issue_number)
                 return
 
-            # Post summary as Jira comment
-            comment_text = (
-                f"## Upstream Discussion Summary\n\n{summary}\n\n"
-                f"[View full discussion]({issue_url})"
+            # Post summary as Jira comment (structured ADF, not plain text)
+            adf = AdfBuilder.discussion_summary(summary, issue_url)
+            self._jira._request(
+                "POST",
+                f"{self._jira._base}/rest/api/3/issue/{ticket.key}/comment",
+                params={"notifyUsers": "false"},
+                json=adf,
             )
-            self._jira.post_note(ticket, comment_text)
             log.info(
                 "  %s: posted upstream discussion summary for issue #%d",
                 ticket.key,

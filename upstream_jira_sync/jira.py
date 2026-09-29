@@ -723,21 +723,21 @@ class JiraClient(BaseHTTPClient):
             ).json()
 
             if not users:
-                log.warning("  Could not find user with email %s", email)
+                log.warning("  Could not find user with configured email")
                 continue
 
             account_id = users[0].get("accountId")
             if not account_id:
-                log.warning("  User %s has no accountId", email)
+                log.warning("  User lookup found no accountId")
                 continue
 
-            # Add as watcher
+            # Add as watcher (Jira API expects accountId as a JSON string, not object)
             self._request(
                 "POST",
                 f"{self._base}/rest/api/3/issue/{ticket_key}/watchers",
-                json={"accountId": account_id},
+                json=account_id,
             )
-            log.info("  %s: added watcher %s", ticket_key, email)
+            log.info("  %s: added watcher", ticket_key)
 
     def transition_ticket(
         self,

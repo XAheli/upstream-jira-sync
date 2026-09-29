@@ -10,6 +10,7 @@ import yaml
 
 from upstream_jira_sync.ai import (
     AITicketMatcher,
+    DiscussionSummarizer,
     IssueClaimClassifier,
     IssueDeduplicator,
     IssueSummarizer,
@@ -184,6 +185,12 @@ def run_sync(args: argparse.Namespace) -> int:
     if config.enable_rfc_epics:
         rfc_classifier = RfcClassifier(llm=llm["rfc"], skill_loader=skill_loader)
 
+    discussion_summarizer: DiscussionSummarizer | None = None
+    if config.enable_auto_create:
+        discussion_summarizer = DiscussionSummarizer(
+            llm=llm["summarize"], skill_loader=skill_loader
+        )
+
     jira_cls = DryRunJiraClient if args.dry_run else JiraClient
 
     emailer: GmailNotifier | None = None
@@ -234,6 +241,7 @@ def run_sync(args: argparse.Namespace) -> int:
             override_gate=gate,
             team_classifier=team_classifier,
             rfc_classifier=rfc_classifier,
+            discussion_summarizer=discussion_summarizer,
             emailer=emailer,
             members=members,
         )
