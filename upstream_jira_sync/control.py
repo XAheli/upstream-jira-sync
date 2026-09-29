@@ -58,7 +58,7 @@ class BotControl:
             )
 
         try:
-            issue = self.jira.find_ticket(control_issue_key)
+            issue = self.jira.get_issue(control_issue_key)
         except Exception as e:
             raise RuntimeError(
                 f"Failed to query bot control issue {control_issue_key}: {e}"

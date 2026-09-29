@@ -172,6 +172,14 @@ class JiraClient(BaseHTTPClient):
             if link.get("object", {}).get("url")
         ]
 
+    def get_issue(self, issue_key: str) -> dict | None:
+        """Fetch a Jira issue by key, returning the full API response or None if not found."""
+        try:
+            resp = self._request(f"/rest/api/3/issue/{issue_key}")
+            return resp.json()
+        except requests.RequestException:
+            return None
+
     def find_tracking_ticket(
         self, issue_url: str, project_key: str
     ) -> JiraTicket | None:
@@ -827,6 +835,10 @@ class JiraClient(BaseHTTPClient):
 
 class DryRunJiraClient(JiraClient):
     """Drop-in replacement for JiraClient that logs what it would do."""
+
+    def get_issue(self, issue_key: str) -> dict | None:
+        log.info("  [DRY RUN] Would fetch issue %s", issue_key)
+        return None
 
     def set_story_points(
         self,
