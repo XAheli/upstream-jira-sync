@@ -402,7 +402,9 @@ class DiscussionSummarizer(_SkillBasedAI):
     """Summarizes recent comments from a GitHub issue discussion."""
 
     _SKILL_NAME = "discussion_summarizer"
-    _PROMPT_TEMPLATE: Final[str] = """Summarize the following GitHub discussion comments into 2-3 key insights.
+    _PROMPT_TEMPLATE: Final[
+        str
+    ] = """Summarize the following GitHub discussion comments into 2-3 key insights.
 Focus on: decisions made, blockers identified, next steps, technical direction.
 
 Comments (chronological order):
@@ -417,15 +419,12 @@ Provide a concise summary (under 150 words) suitable for a Jira comment."""
 
         try:
             comments_text = "\n".join(
-                f"**{c['author']}** ({c['created_at']}):\n{c['body']}"
-                for c in comments
+                f"**{c['author']}** ({c['created_at']}):\n{c['body']}" for c in comments
             )
             # Truncate from the start to keep newest discussion (tail, not head)
             if len(comments_text) > MAX_COMMENT_CHARS:
                 comments_text = "..." + comments_text[-MAX_COMMENT_CHARS:]
-            prompt = self._PROMPT_TEMPLATE.format(
-                comments=comments_text
-            )
+            prompt = self._PROMPT_TEMPLATE.format(comments=comments_text)
             return self._llm.complete(
                 system=self._system,
                 user_message=prompt,

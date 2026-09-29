@@ -859,7 +859,8 @@ class GitHubClient(BaseHTTPClient):
                     "created_at": c.get("created_at", ""),
                     "body": c.get("body", "")[:2000],  # Limit comment body
                 }
-                for c in reversed(data) if c
+                for c in reversed(data)
+                if c
             ]
         except (requests.RequestException, ValueError) as exc:
             log.warning(

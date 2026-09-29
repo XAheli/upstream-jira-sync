@@ -331,10 +331,7 @@ class SyncOrchestrator:
             self._config.jira_project_key,
         )
         # Check for existing ticket by upstream issue number (prevents release-to-release dupes)
-        if (
-            not existing
-            and self._config.upstream_issue_number_field
-        ):
+        if not existing and self._config.upstream_issue_number_field:
             try:
                 existing = self._jira.find_ticket_by_custom_field(
                     self._config.jira_project_key,
@@ -504,7 +501,9 @@ class SyncOrchestrator:
 
         try:
             # Fetch recent comments from the upstream issue
-            comments = self._github.get_issue_comments(repo, issue_number, max_comments=10)
+            comments = self._github.get_issue_comments(
+                repo, issue_number, max_comments=10
+            )
             if not comments:
                 log.info("  No comments found on issue #%d", issue_number)
                 return
