@@ -335,11 +335,20 @@ class SyncOrchestrator:
             not existing
             and self._config.upstream_issue_number_field
         ):
-            existing = self._jira.find_ticket_by_custom_field(
-                self._config.jira_project_key,
-                self._config.upstream_issue_number_field,
-                str(issue_number),
-            )
+            try:
+                existing = self._jira.find_ticket_by_custom_field(
+                    self._config.jira_project_key,
+                    self._config.upstream_issue_number_field,
+                    str(issue_number),
+                )
+            except Exception as e:
+                log.warning(
+                    "Failed to query upstream issue field for %s: %s. "
+                    "Skipping dedup check, will retry on next run.",
+                    issue_url,
+                    e,
+                )
+                return
 
         if not existing and self._deduplicator:
             candidates = self._jira.find_candidate_tickets(
