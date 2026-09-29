@@ -19,6 +19,7 @@ from upstream_jira_sync.ai import (
     TeamClassifier,
 )
 from upstream_jira_sync.config import LLM_TASKS, AppConfig, LLMSettings
+from upstream_jira_sync.control import BotControl
 from upstream_jira_sync.emailer import GmailNotifier
 from upstream_jira_sync.github import GitHubClient
 from upstream_jira_sync.jira import DryRunJiraClient, JiraClient
@@ -217,6 +218,26 @@ def run_sync(args: argparse.Namespace) -> int:
     ):
         if config.team_field:
             jira._team_field = config.team_field
+
+        # Check bot control (enable/disable, frequency override) from Jira
+        try:
+            bot_control = BotControl(jira=jira, config=config)
+            control_state = bot_control.get_control_state()
+
+            if not control_state["enabled"]:
+                log.info("Bot disabled via Jira control issue, exiting")
+                return 0
+
+            if control_state["sync_interval_hours"]:
+                log.info(
+                    "Overriding poll interval from %d to %d hours (from Jira control)",
+                    config.poll_interval_hours,
+                    control_state["sync_interval_hours"],
+                )
+                config.poll_interval_hours = control_state["sync_interval_hours"]
+        except RuntimeError as e:
+            log.error("Bot control check failed: %s", e)
+            return 1
 
         gate: ManualOverrideGate | None = None
         if config.enable_manual_override:

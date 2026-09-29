@@ -203,3 +203,10 @@ settings:
   enable_low_conf_email: false
   low_conf_email_mode: shadow  # shadow | auto
   # low_conf_email_from: bot@example.com
+
+  # ── Bot control via Jira (enable/disable, sync frequency) ────────────────────
+  # Allow Jira to control whether the bot runs and how often it syncs.
+  # bot_control_enabled: false
+  # bot_control_issue: PROJ-123              # Jira issue key with control fields
+  # bot_control_flag_field: customfield_XXXXX  # Select field: enabled|disabled|suspended
+  # bot_control_interval_field: customfield_YYYYY  # Number field: sync frequency in hours (optional)

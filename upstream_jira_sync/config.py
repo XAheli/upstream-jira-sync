@@ -214,6 +214,12 @@ class AppConfig:
     low_conf_email_mode: str = "shadow"
     low_conf_email_from: str = ""
 
+    # Bot control via Jira (enable/disable, sync frequency override)
+    bot_control_enabled: bool = False
+    bot_control_issue: str = ""
+    bot_control_flag_field: str = ""
+    bot_control_interval_field: str = ""
+
     _REQUIRED_FIELDS: ClassVar[list[tuple[str, str]]] = [
         ("github_repo", "settings.github_repo is missing or empty"),
         ("jira_url", "settings.jira_url is missing"),
