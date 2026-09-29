@@ -126,9 +126,10 @@ settings:
   # ── Ticket watchers (automatic visibility) ────────────────────────────────
   # Email addresses automatically added as watchers to newly created tickets.
   # Enables internal stakeholder visibility without explicit assignment.
-  default_watchers:
-    - managarw@redhat.com  # Mansi Agarwal
-    - grajaiya@redhat.com  # Gowrishankar Rajaiyan
+  default_watchers: []
+  # default_watchers:
+  #   - someone@example.com
+  #   - another@example.com
 
   # Close a ticket whose linked PR(s) have been idle this many days. 0 = off.
   stale_pr_close_days: 21
