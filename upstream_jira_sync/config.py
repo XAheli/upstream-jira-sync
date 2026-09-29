@@ -593,6 +593,8 @@ _KNOWN_SETTINGS_KEYS: Final[frozenset[str]] = frozenset(
         "skills_dir",
         "enable_auto_create",
         "claim_mode",
+        "upstream_issue_number_field",
+        "default_watchers",
         "stale_pr_close_days",
         "stale_pr_close_mode",
         "enable_sprint_tagging",
@@ -629,6 +631,10 @@ _KNOWN_SETTINGS_KEYS: Final[frozenset[str]] = frozenset(
         "enable_low_conf_email",
         "low_conf_email_mode",
         "low_conf_email_from",
+        "bot_control_enabled",
+        "bot_control_issue",
+        "bot_control_flag_field",
+        "bot_control_interval_field",
     }
 )
 
