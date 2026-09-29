@@ -16,7 +16,7 @@ class FakeJiraClient:
         self.raises = raises
         self.queries: list[str] = []
 
-    def find_ticket(self, issue_key: str) -> dict | None:
+    def get_issue(self, issue_key: str) -> dict | None:
         self.queries.append(issue_key)
         if self.raises:
             raise self.raises
