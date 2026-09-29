@@ -710,34 +710,37 @@ class JiraClient(BaseHTTPClient):
         ticket_key: str,
         watcher_emails: list[str],
     ) -> None:
-        """Add watchers to a Jira ticket by email address."""
+        """Add watchers to a Jira ticket by email address. Continue on failures."""
         if not watcher_emails:
             return
 
         for email in watcher_emails:
-            # Look up user by email
-            users = self._request(
-                "GET",
-                f"{self._base}/rest/api/3/user/search",
-                params={"query": email, "maxResults": 1},
-            ).json()
+            try:
+                # Look up user by email
+                users = self._request(
+                    "GET",
+                    f"{self._base}/rest/api/3/user/search",
+                    params={"query": email, "maxResults": 1},
+                ).json()
 
-            if not users:
-                log.warning("  Could not find user with configured email")
-                continue
+                if not users:
+                    log.warning("  Could not find user with configured email")
+                    continue
 
-            account_id = users[0].get("accountId")
-            if not account_id:
-                log.warning("  User lookup found no accountId")
-                continue
+                account_id = users[0].get("accountId")
+                if not account_id:
+                    log.warning("  User lookup found no accountId")
+                    continue
 
-            # Add as watcher (Jira API expects accountId as a JSON string, not object)
-            self._request(
-                "POST",
-                f"{self._base}/rest/api/3/issue/{ticket_key}/watchers",
-                json=account_id,
-            )
-            log.info("  %s: added watcher", ticket_key)
+                # Add as watcher (Jira API expects accountId as a JSON string, not object)
+                self._request(
+                    "POST",
+                    f"{self._base}/rest/api/3/issue/{ticket_key}/watchers",
+                    json=account_id,
+                )
+                log.info("  %s: added watcher", ticket_key)
+            except Exception as exc:
+                log.warning("  Failed to add watcher to %s: %s", ticket_key, exc)
 
     def set_custom_field(
         self,

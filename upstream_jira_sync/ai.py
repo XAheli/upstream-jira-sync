@@ -420,8 +420,11 @@ Provide a concise summary (under 150 words) suitable for a Jira comment."""
                 f"**{c['author']}** ({c['created_at']}):\n{c['body']}"
                 for c in comments
             )
+            # Truncate from the start to keep newest discussion (tail, not head)
+            if len(comments_text) > MAX_COMMENT_CHARS:
+                comments_text = "..." + comments_text[-MAX_COMMENT_CHARS:]
             prompt = self._PROMPT_TEMPLATE.format(
-                comments=comments_text[:MAX_COMMENT_CHARS]
+                comments=comments_text
             )
             return self._llm.complete(
                 system=self._system,
