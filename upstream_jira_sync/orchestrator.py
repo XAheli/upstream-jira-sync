@@ -459,20 +459,10 @@ class SyncOrchestrator:
         # Store upstream issue number in custom field for deduplication checks
         if self._config.upstream_issue_number_field:
             try:
-                self._jira._request(
-                    "PUT",
-                    f"{self._jira._base}/rest/api/3/issue/{ticket.key}",
-                    params={"notifyUsers": "false"},
-                    json={
-                        "fields": {
-                            self._config.upstream_issue_number_field: str(issue_number)
-                        }
-                    },
-                )
-                log.info(
-                    "  %s: set upstream_issue_number to %d",
+                self._jira.set_custom_field(
                     ticket.key,
-                    issue_number,
+                    self._config.upstream_issue_number_field,
+                    str(issue_number),
                 )
             except Exception:
                 log.exception(

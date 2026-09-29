@@ -739,6 +739,21 @@ class JiraClient(BaseHTTPClient):
             )
             log.info("  %s: added watcher", ticket_key)
 
+    def set_custom_field(
+        self,
+        ticket_key: str,
+        field_id: str,
+        field_value: str,
+    ) -> None:
+        """Set a custom field value on a Jira ticket."""
+        self._request(
+            "PUT",
+            f"{self._base}/rest/api/3/issue/{ticket_key}",
+            params={"notifyUsers": "false"},
+            json={"fields": {field_id: field_value}},
+        )
+        log.info("  %s: set custom field %s", ticket_key, field_id)
+
     def transition_ticket(
         self,
         ticket: JiraTicket,
@@ -908,6 +923,30 @@ class DryRunJiraClient(JiraClient):
             ticket.key,
             url,
             relationship,
+        )
+
+    def add_watchers(
+        self,
+        ticket_key: str,
+        watcher_emails: list[str],
+    ) -> None:
+        log.info(
+            "  [DRY RUN] Would add %d watcher(s) to %s",
+            len(watcher_emails),
+            ticket_key,
+        )
+
+    def set_custom_field(
+        self,
+        ticket_key: str,
+        field_id: str,
+        field_value: str,
+    ) -> None:
+        log.info(
+            "  [DRY RUN] Would set custom field %s on %s to %s",
+            field_id,
+            ticket_key,
+            field_value,
         )
 
     def transition_ticket(
